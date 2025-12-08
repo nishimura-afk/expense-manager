@@ -445,7 +445,7 @@ export default function App() {
             {/* 追加ボタン */}
             <button
               onClick={addEntry}
-              className="w-8 bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-slate-300 flex items-center justify-center gap-2 active:scale-95 transition-transform mt-4"
+              className="w-full bg-slate-800 hover:bg-slate-700 text-white p-4 rounded-xl font-bold shadow-lg shadow-slate-300 flex items-center justify-center gap-2 active:scale-95 transition-transform mt-4"
             >
               <Plus size={24} />
               リストに追加する
@@ -457,6 +457,7 @@ export default function App() {
         {activeTab === 'personal' && (
           <div className="bg-white rounded-2xl shadow-sm p-5 animate-fade-in space-y-6">
             
+            {/* ... existing code ... */}
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-500 ml-1">項目は？</label>
               <button
