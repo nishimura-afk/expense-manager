@@ -102,8 +102,6 @@ export default function App() {
     }
 
     const itemInfo = items.find(i => i.name === currentItem);
-    
-    // 修正: メモは純粋にメモ欄の内容だけにする（重複防止）
     const memoText = currentMemo; 
 
     const newEntry = {
@@ -113,17 +111,14 @@ export default function App() {
       amount: parseInt(currentAmount),
       memo: memoText,
       isInvoice: itemInfo ? itemInfo.isInvoice : false,
-      // その他ならその内容、それ以外なら項目名をセット
       displayItem: currentItem === 'その他' ? currentOther : currentItem,
       createdAt: new Date().toISOString()
     };
 
     setEntries([newEntry, ...entries]);
     
-    // 入力リセット
-    // 店舗名は連続入力のために残すか、誤入力防止で消すか。
-    // ここでは安全のためリセットしますが、必要なら setCurrentStore('') を削除してください。
-    setCurrentStore(''); 
+    // 入力リセット（店舗名は保持する設定に変更）
+    // setCurrentStore(''); // ← これをコメントアウトしました
     setCurrentItem('');
     setCurrentAmount('');
     setCurrentMemo('');
@@ -142,7 +137,6 @@ export default function App() {
       return;
     }
 
-    // 修正: メモは純粋にメモ欄の内容だけにする
     const memoText = pMemo;
 
     const newEntry = {
@@ -178,13 +172,11 @@ export default function App() {
     const now = new Date();
     const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
     
-    // 店舗データの集計（どの店舗が多いか）
     if (entries.length > 0) {
       const storeCounts = {};
       entries.forEach(e => {
         storeCounts[e.store] = (storeCounts[e.store] || 0) + 1;
       });
-      // 最も多い店舗名を取得
       const mainStore = Object.keys(storeCounts).reduce((a, b) => storeCounts[a] > storeCounts[b] ? a : b);
       const otherCount = entries.length - storeCounts[mainStore];
       
@@ -208,10 +200,8 @@ export default function App() {
     }
 
     const csvRows = [];
-    // ヘッダー（GASやExcelで集計しやすいようにシンプルに）
     csvRows.push(['種別', '店舗_項目', '詳細', '金額', 'メモ', 'インボイス判定', '登録日時'].join(','));
     
-    // 店舗データ
     entries.forEach(entry => {
       csvRows.push([
         '店舗出金',
@@ -224,7 +214,6 @@ export default function App() {
       ].join(','));
     });
 
-    // 個人データ
     personalEntries.forEach(entry => {
       csvRows.push([
         '個人経費',
@@ -238,7 +227,7 @@ export default function App() {
     });
 
     const filename = generateFileName();
-    const csvContent = '\uFEFF' + csvRows.join('\n'); // BOM付与
+    const csvContent = '\uFEFF' + csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     
     const link = document.createElement('a');
@@ -248,7 +237,12 @@ export default function App() {
     link.click();
     document.body.removeChild(link);
 
-    showNotification(`「${filename}」を出力しました`);
+    // ダウンロード後にデータを自動削除（リセット）
+    setEntries([]);
+    setPersonalEntries([]);
+    setShowDeleteConfirm(false); // 削除確認画面が出ていたら閉じる
+
+    showNotification(`「${filename}」を出力し、データをリセットしました`);
   };
 
   // 合計計算
