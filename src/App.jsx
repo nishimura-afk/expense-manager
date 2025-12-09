@@ -102,7 +102,9 @@ export default function App() {
     }
 
     const itemInfo = items.find(i => i.name === currentItem);
-    const memoText = currentMemo; 
+    
+    // 【修正】メモが空の場合は「-」を入れる（集計漏れ対策）
+    const memoText = currentMemo.trim() === '' ? '-' : currentMemo;
 
     const newEntry = {
       id: Date.now(),
@@ -117,8 +119,7 @@ export default function App() {
 
     setEntries([newEntry, ...entries]);
     
-    // 入力リセット（店舗名は保持する設定に変更）
-    // setCurrentStore(''); // ← これをコメントアウトしました
+    // 入力リセット（店舗名は保持）
     setCurrentItem('');
     setCurrentAmount('');
     setCurrentMemo('');
@@ -137,7 +138,8 @@ export default function App() {
       return;
     }
 
-    const memoText = pMemo;
+    // 【修正】メモが空の場合は「-」を入れる
+    const memoText = pMemo.trim() === '' ? '-' : pMemo;
 
     const newEntry = {
       id: Date.now(),
@@ -240,7 +242,7 @@ export default function App() {
     // ダウンロード後にデータを自動削除（リセット）
     setEntries([]);
     setPersonalEntries([]);
-    setShowDeleteConfirm(false); // 削除確認画面が出ていたら閉じる
+    setShowDeleteConfirm(false); 
 
     showNotification(`「${filename}」を出力し、データをリセットしました`);
   };
